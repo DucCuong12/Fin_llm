@@ -1,0 +1,52 @@
+% Main file for the VolTilt paper (Springer LNCS format, as in DASFAA_2027/samplepaper.tex).
+% Build:  latexmk -pdf main.tex   (or pdflatex + bibtex + pdflatex x2). Needs llncs.cls and splncs04.bst, copied next to this file.
+% Section files: intro, related_work, problem_formulation, method, experiments, conclusion. Bibliography: references.bib.
+% Method figures are included from method.tex: voltilt_arch.pdf (built from voltilt_arch.tex + icons_v10/).
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext}
+\usepackage[varvw]{newtxmath}
+\usepackage{graphicx}   % figures and \resizebox in the tables of experiments.tex
+\usepackage{xcolor}
+\usepackage{booktabs}   % table rules in experiments.tex
+\usepackage{amsmath}    % \mathbb, \operatorname, \eqref
+\usepackage{url}
+\newcommand{\ieq}[1]{\refstepcounter{equation}\label{#1}\,\textup{(\theequation)}} % inline equation number, keeps \eqref and hyperlinks working
+\usepackage{placeins} % \FloatBarrier keeps all tables inside the Experiments section
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue,bookmarksnumbered=true,pdfusetitle=false]{hyperref} % clickable citations, references and links; load last
+%
+\begin{document}
+%
+\title{VolTilt: Attributing News and Risk Control in LLM Portfolio Allocation}
+%
+\titlerunning{VolTilt}
+%
+% TODO: fill in authors and affiliations (remove for double-blind review if required).
+\author{First Author\inst{1} \and Second Author\inst{1}}
+%
+\authorrunning{F. Author et al.}
+%
+\institute{Institution Name, City, Country\\
+\email{author@example.org}}
+%
+\maketitle
+%
+\begin{abstract}
+A trading agent can improve its risk-adjusted performance by changing which assets it holds or how much capital it invests. We propose VolTilt to examine these contributions separately. A large language model extracts structured events from financial news. We filter reports, smooth their impact scores, and use ranks to form bounded relative weights. A volatility-targeting rule sets the invested fraction from realised returns weighted by past tilts, creating a lagged link between the two rules. We evaluate the method in three settings from FINSABER and InvestorBench, covering 13 asset--setting entries. In the FINSABER stock window, the portfolio has higher Sharpe and shallower drawdown than the fully invested equal-weight reference. The difference from volatility scaling alone is small in that window. In the two stock settings, matching daily invested capital yields mixed Sharpe differences across labellers. The one-session news delay also gives mixed results across windows. Same-day associations for raw event scores are positive, while tests of forward returns offer limited evidence for the smoothed scores that drive the allocation. These results show how explicit budget and composition comparisons qualify performance claims about news-based trading policies.
+\keywords{Large language models \and Financial trading agents \and Volatility targeting \and Portfolio allocation.}
+\end{abstract}
+%
+\input{intro}
+\input{related_work}
+\input{problem_formulation}
+\input{method}
+
+\input{experiments}
+% (no float barrier here: all tables already end inside Experiments; a barrier pushed the Conclusion to a new page)
+\input{conclusion}
+%
+\bibliographystyle{splncs04}
+\bibliography{references}
+%
+\end{document}

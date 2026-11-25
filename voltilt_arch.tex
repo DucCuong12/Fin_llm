@@ -1,0 +1,165 @@
+\documentclass[tikz,border=3pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[sfdefault,type1,scaled=0.95]{roboto}
+% body text set to Roboto Bold after \begin{document}; \bfseries -> ExtraBold; math in bold
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+% Tabler outline icons (MIT), recoloured per pathway, in ./icons_v10
+\newcommand{\icl}[3][1.9em]{\begin{tabular}{@{}c@{\hspace{5pt}}c@{}}\raisebox{\dimexpr-0.5\height+0.3em}{\includegraphics[height=#1]{icons_v10/#2.pdf}} & \begin{tabular}{@{}c@{}}#3\end{tabular}\end{tabular}}
+\newcommand{\li}[2][1.3em]{\raisebox{-0.3em}{\includegraphics[height=#1]{icons_v10/#2.pdf}}}
+\usetikzlibrary{arrows.meta,calc,backgrounds,decorations.markings}
+
+% ---------------- palette: two cool pathways + one warm accent + neutrals ----------------
+\definecolor{ink}{HTML}{1E1E1E}
+\definecolor{tea}{HTML}{2A8C80}  \definecolor{teabg}{HTML}{E2F1EE}  \definecolor{teabox}{HTML}{F4FAF9}   % event pathway
+\definecolor{sla}{HTML}{3D5A80}  \definecolor{slabg}{HTML}{E4EAF2}  \definecolor{slabox}{HTML}{F4F7FB}   % risk pathway
+\definecolor{ter}{HTML}{D9653F}  \definecolor{terbg}{HTML}{FBE5DB}                                       % coupling
+\definecolor{neu}{HTML}{3A3A3A}  \definecolor{neubg}{HTML}{EEECE8}  \definecolor{grybg}{HTML}{E7E7E7}    % allocation, loop
+
+\tikzset{
+  >={Stealth[length=1.9mm,width=1.5mm]},
+  every node/.style={font=\footnotesize},
+  cont/.style={draw=ink!35, line width=0.7pt, rounded corners=6pt},
+  ctitle/.style={fill=white, inner sep=2pt, font=\small},
+  wbox/.style={draw=ink, fill=white, line width=0.5pt, rounded corners=1.5pt, align=center, inner sep=2.5pt},
+  op/.style={draw=ink!70, line width=0.5pt, rounded corners=2pt, align=center, inner sep=3.5pt},
+  panel/.style={line width=0.7pt, rounded corners=5pt},
+  ann/.style={font=\footnotesize\bfseries\itshape},
+  ev/.style={->, line width=0.7pt, draw=tea},
+  rk/.style={->, line width=0.7pt, draw=sla},
+  ol/.style={->, line width=0.9pt, draw=neu},
+  fb/.style={->, line width=1.1pt, draw=ter, dash pattern=on 3pt off 2pt},
+  track/.style={line width=7pt, draw=neubg, rounded corners=9pt},
+  loop/.style={line width=1.3pt, draw=neu, rounded corners=9pt, ->, >={Stealth[length=2.3mm,width=1.9mm]},
+    postaction={decorate, decoration={markings,
+      mark=at position 0.22 with {\arrow{Stealth[length=2.3mm,width=1.9mm]}},
+      mark=at position 0.62 with {\arrow{Stealth[length=2.3mm,width=1.9mm]}}}}},
+}
+
+\begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\fontseries{b}\selectfont\boldmath
+\DeclareRobustCommand{\bfseries}{\fontseries{eb}\selectfont}
+\begin{tikzpicture}
+
+% ================================================================
+% Band 1: Market environment
+% ================================================================
+\draw[cont] (3.25,7.2) rectangle (14.35,8.45);
+\node[ctitle] at (8.8,8.45) {Market Environment};
+\node[wbox, minimum width=2.8cm, minimum height=0.75cm] (px) at (6.25,7.77)
+  {\li[1.45em]{trending-up}\;\; Stock Prices};
+\node[wbox, minimum width=2.8cm, minimum height=0.75cm] (news) at (10.9,7.77)
+  {\li[1.45em]{news}\;\; Company News};
+
+% ================================================================
+% Band 2: daily signals
+% ================================================================
+\draw[cont] (3.25,4.15) rectangle (14.35,6.8);
+\node[ctitle] at (8.0,6.8) {Daily Signals};
+
+% --- risk estimation panel ---
+\draw[panel, draw=sla, fill=slabg!60] (3.45,4.35) rectangle (8.7,6.43);
+\node[anchor=north west, font=\footnotesize\bfseries, text=sla] at (3.55,6.4) {Risk Estimation};
+\node[op, fill=terbg, draw=ter, line width=0.9pt, minimum height=1.45cm, inner xsep=2.5pt] (tret) at (6.93,5.2)
+  {\li[1.5em]{chart-area-line}\\[2pt]Tilted Portfolio Return\\[1pt]{\scriptsize$\tilde r_s=\frac{1}{|\mathcal{B}_s|}\sum_{i\in\mathcal{B}_s}\tau_{i,s-1}r^{\mathrm{obs}}_{i,s}$}};
+\node[op, fill=slabox, draw=sla, minimum width=1.3cm, minimum height=1.45cm] (vol) at (4.18,5.2)
+  {\li[1.5em]{activity}\\[2pt]Volatility\\[1pt]$\hat\sigma_t$};
+\draw[rk] (tret) -- (vol);
+
+% --- event reading panel ---
+\draw[panel, draw=tea, fill=teabg!60] (8.88,4.35) rectangle (14.15,6.43);
+\node[anchor=north east, font=\footnotesize\bfseries, text=tea] at (14.1,6.4) {Event Reading (LLM)};
+\node[op, fill=grybg, minimum width=1.45cm, minimum height=1.45cm] (read) at (9.7,5.2)
+  {\li[1.5em]{file-search}\\[2pt]LLM\\[1pt]Reader};
+\node[op, fill=teabox, draw=tea, minimum height=1.45cm] (gate) at (11.3,5.2)
+  {\li[1.5em]{filter}\\[2pt]Gate\\[1pt]{\scriptsize main subject}\\[-2pt]{\scriptsize $\wedge$ numbers}};
+\node[op, fill=teabox, draw=tea, minimum height=1.45cm] (score) at (13.15,5.2)
+  {\li[1.5em]{chart-line}\\[2pt]Event Score\\[1pt]{\scriptsize EMA}};
+\draw[ev] (read) -- (gate);
+\draw[ev] (gate) -- (score);
+
+% ================================================================
+% Band 3: allocation at close t
+% ================================================================
+\draw[cont] (3.25,0.35) rectangle (14.35,3.65);
+\node[ctitle] at (5.6,0.35) {Allocation at Day $t$ Close};
+
+% budget
+\draw[panel, draw=sla, fill=slabg] (3.5,0.75) rectangle (7.05,2.95);
+\node[ann, text=sla] at (5.75,3.25) {\li[1.3em]{target}\; target $\sigma^\star=20\%$};
+\node[wbox, minimum width=2.4cm, minimum height=0.9cm] (bud) at (5.275,1.95)
+  {\icl{gauge}{Budget $\lambda_t$\\[1pt]{\scriptsize $\min(1,\ \sigma^\star/\hat\sigma_t)$}}};
+\node at (5.275,1.0) {Volatility Budget Layer};
+
+% positions
+\draw[panel, draw=neu, fill=neubg] (7.45,0.75) rectangle (9.95,2.95);
+\node[ann, text=neu] at (8.7,3.25) {\li[1.3em]{scale}\; $a_{i,t}=\lambda_t\,\tau_{i,t}/N_t$};
+\node[wbox, minimum width=1.9cm, minimum height=0.9cm] (pos) at (8.7,1.95)
+  {\icl[1.7em]{chart-pie}{Positions}};
+\node at (8.35,1.0) {Allocation};
+
+% rank tilt
+\draw[panel, draw=tea, fill=teabg] (10.35,0.75) rectangle (14.1,2.95);
+\node[ann, text=tea] at (12.0,3.25) {\li[1.3em]{chart-bar}\; cross-asset rank};
+\node[wbox, minimum width=2.4cm, minimum height=0.9cm] (tilt) at (12.3,1.95)
+  {\icl[1.7em]{adjustments-horizontal}{Rank Tilt $\tau_{i,t}$}};
+\node at (12.22,1.0) {Event Tilt Layer};
+
+\draw[rk] (bud) -- (pos);
+\draw[ev] (tilt) -- (pos);
+
+% ================================================================
+% Output and legend
+% ================================================================
+\node[draw=neu, fill=neubg, line width=0.8pt, rounded corners=5pt, align=left, text width=2.9cm,
+      inner sep=4pt, anchor=north west] (outp) at (14.65,6.35)
+  {\li[1.35em]{briefcase}\;\textbf{Daily Output:}\\[3pt]
+   1) Invested fraction $\lambda_t$\\[1pt]
+   2) Asset weights $a_{i,t}$\\[1pt]
+   3) Cash $1-\lambda_t$};
+
+\begin{scope}[shift={(14.75,8.3)}, every node/.style={font=\scriptsize, anchor=west}]
+  \draw[ev] (0,0) -- (0.75,0);          \node at (0.85,0) {Event path};
+  \draw[rk] (0,-0.3) -- (0.75,-0.3);    \node at (0.85,-0.3) {Risk path};
+  \draw[fb] (0,-0.6) -- (0.75,-0.6);    \node at (0.85,-0.6) {Tilt feedback};
+  \draw[ol] (0,-0.9) -- (0.75,-0.9);    \node at (0.85,-0.9) {Daily loop};
+\end{scope}
+
+% ================================================================
+% Cross-band arrows
+% ================================================================
+\draw[ev] (read|-news.south) -- (read.north);
+\draw[rk] (tret|-px.south) -- (tret.north);
+\draw[rk] (vol.south) -- (vol|-bud.north);
+\draw[ev] (13.4,0|-score.south) -- (13.4,0|-tilt.north);
+
+% the coupling: yesterday's tilts define the portfolio whose risk is measured
+\draw[fb] (10.5,2.95) -- (10.5,3.9) -| (tret.south);
+\node[fill=white, inner sep=1.2pt, font=\scriptsize\bfseries, text=ter!80!black] at (8.7,3.9)
+  {\li[1.25em]{history}\; prior tilts $\tau_{i,s-1}$};
+
+% ================================================================
+% Daily loop: positions are held until the next close, then the cycle repeats
+% ================================================================
+\coordinate (J) at (9.5,-0.15);
+\begin{scope}[on background layer]
+  \draw[track] (J) -- (1.9,-0.15) -- (1.9,7.82) -- (3.25,7.82);
+  \draw[track] (J) -- (16.1,-0.15) -- (16.1,0|-outp.south);
+\end{scope}
+\draw[line width=0.9pt, draw=neu] (9.5,0|-pos.south) -- (J);
+\draw[ol, rounded corners=9pt] (J) -- (16.1,-0.15) -- (16.1,0|-outp.south);
+\draw[loop] (J) -- (1.9,-0.15) -- (1.9,7.82) -- (3.25,7.82);
+\fill[neu] (J) circle (1.6pt);
+
+% time ticks on the loop
+\foreach \y/\lab in {0.75/{close $t$}, 6.95/{close $t{+}1$}}{
+  \draw[line width=0.9pt, draw=neu] (1.75,\y) -- (2.05,\y);
+  \node[anchor=east, font=\scriptsize, text=neu] at (1.7,\y) {\lab};}
+\node[draw=neu, fill=white, line width=0.8pt, rounded corners=7pt, align=center, inner sep=4pt,
+      font=\footnotesize] (cyc) at (1.9,3.95)
+  {\li[1.6em]{calendar-repeat}\\[2pt]\bfseries Daily Rebalance\\[2pt]
+   {\scriptsize hold positions}\\[-1pt]{\scriptsize until $t{+}1$}};
+
+\end{tikzpicture}
+\end{document}

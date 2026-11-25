@@ -1,0 +1,56 @@
+\section{Problem Formulation}
+\label{sec:problem}
+
+An LLM trading policy can change both the assets a portfolio holds and the fraction of capital it invests. A higher Sharpe ratio or a shallower drawdown can therefore reflect better asset ranking, a change in aggregate exposure, or the interaction between the two. We ask whether an LLM-derived news signal adds value once we account for the portfolio's volatility-control rule.
+
+\subsection{Information and Decision Timing}
+
+We consider daily allocation over a universe of $N$ stocks or cryptocurrencies. Let $p_{i,t}$ be the adjusted closing price of asset $i$ on panel date $t$, and let $\mathcal{A}_t$ be the set of assets with a valid close on that date, with $N_t=|\mathcal{A}_t|$. For adjacent closes the return ending at $t+1$ is $r_{i,t+1}=p_{i,t+1}/p_{i,t}-1$. We write $\mathcal{X}_{i,t}$ for the news items associated with asset $i$ and dated $t$. The allocator selects positions at the close using $\mathcal{F}_t=\{p_{i,s},\mathcal{X}_{i,s}:s\leq t\}$, with missing inputs allowed, for the subsequent holding interval.
+
+We use data from FINSABER and InvestorBench~\cite{li2025finsaber,li2024investorbench}. When an item has only a date, we treat it as available at that day’s close. The backtest also uses the final close in the decision, so same-close execution is an alignment assumption for both inputs. In Section~\ref{sec:experiments} we delay news by one observed session and separately test trading one session after forming the entire target portfolio. These timing checks address information availability at execution. Pretraining overlap poses a separate source of look-ahead.
+
+\subsection{Capital Weights and Backtest Accounting}
+
+We write $q_{i,t}$ for the share of invested capital assigned to asset $i$ and $\lambda_t$ for the total invested fraction. The target capital weights, including the uninvested fraction $a_{0,t}$, satisfy
+$a_{i,t}=\lambda_t q_{i,t}=w_{i,t}/N_t$, $q_{i,t}\geq 0$, $\sum_{i\in\mathcal{A}_t} q_{i,t}=1$, $0\leq\lambda_t\leq1$, and $a_{0,t}=1-\lambda_t$~\ieq{eq:capital-weights}.
+Here $w_{i,t}$ is the exposure multiplier relative to the equal capital share $1/N_t$. Cash earns zero in the backtest.
+
+The main portfolio backtest tracks returns and changes in multipliers by asset. Let $t_i^+$ and $t_i^-$ be the next and preceding observed closes of asset $i$ around $t$, and let $\mathcal{D}_t(\pi)$ be the legs with both a recorded position under policy $\pi$ at $t$ and a subsequent observed close. The net return observation indexed by decision date $t$ is
+\begin{equation}
+  R^{\mathrm{net}}_t(\pi)
+    =\frac{1}{|\mathcal{D}_t(\pi)|}
+      \sum_{i\in\mathcal{D}_t(\pi)}\!
+        \left[w_{i,t}\left(\frac{p_{i,t_i^+}}{p_{i,t}}-1\right)
+            -c\,|w_{i,t}-w_{i,t_i^-}|\right].
+  \label{eq:portret}
+\end{equation}
+We omit dates with no realised legs. The cost proxy uses zero for the initial or missing preceding multiplier. On a complete panel the return term is the usual weighted sum with capital weights $a_{i,t}$. With missing observations, the implementation averages realised legs only. An intervening gap extends the interval to the next observed close, and a leg with no subsequent close contributes no return or separate liquidation adjustment. This ex-post averaging can change the effective denominator relative to the target allocation. The cost term averages absolute changes in target multipliers over those same legs. It omits price drift and turnover due solely to a change in the number of eligible assets. Our fully invested equal-weight reference uses $w_{i,t}=1$ on each eligible asset and thus targets equal shares at each close.
+
+\subsection{Attribution Contrasts}
+
+Let $\boldsymbol{q}^{\mathrm{news}}$ be the sequence of news-derived relative weights and let $\boldsymbol{q}^{\mathrm{eq}}$ assign $q^{\mathrm{eq}}_{i,t}=1/N_t$. Applying the same volatility rule to the history of each allocation gives the budget sequences $\boldsymbol{\lambda}^{\mathrm{news}}$ and $\boldsymbol{\lambda}^{\mathrm{eq}}$. With $\mathrm{SR}(\boldsymbol{\lambda},\boldsymbol{q})$ denoting annualised Sharpe on aligned dates under common cost accounting, we define the incremental policy contrast
+\begin{equation}
+  \Delta_{\mathrm{policy}}=
+    \mathrm{SR}(\boldsymbol{\lambda}^{\mathrm{news}},\boldsymbol{q}^{\mathrm{news}})
+    -\mathrm{SR}(\boldsymbol{\lambda}^{\mathrm{eq}},\boldsymbol{q}^{\mathrm{eq}}).
+  \label{eq:policy-contrast}
+\end{equation}
+This contrast allows the budget to respond to historical composition. To measure the change in relative weights at the same daily invested fraction, we also use
+\begin{equation}
+  \Delta_{\mathrm{comp}}(\boldsymbol{\lambda}^{\mathrm{ref}})=
+    \mathrm{SR}(\boldsymbol{\lambda}^{\mathrm{ref}},\boldsymbol{q}^{\mathrm{news}})
+    -\mathrm{SR}(\boldsymbol{\lambda}^{\mathrm{ref}},\boldsymbol{q}^{\mathrm{eq}}).
+  \label{eq:composition-contrast}
+\end{equation}
+We take $\boldsymbol{\lambda}^{\mathrm{ref}}=\boldsymbol{\lambda}^{\mathrm{eq}}$, computed from information available at each decision. This retrospective comparison holds the daily invested fraction constant. The compositions can still differ in turnover, realised volatility, and factor exposures, so the contrast measures the net portfolio effect of reallocating capital at the chosen budget.
+
+\subsection{Performance and News Information}
+
+We use annualised net Sharpe as the primary performance measure and report cumulative return, realised volatility, and maximum drawdown alongside it. Section~\ref{sec:experiments} specifies the benchmark windows and inference procedures. We separately test the association between the unsmoothed daily event score $h_{i,t}$ in Eq.~\eqref{eq:vt-score} and subsequent returns. For this diagnostic, $t$ indexes each asset's observed sessions, with $Y^{(0)}_{i,t}=p_{i,t}/p_{i,t-1}-1$ and $Y^{(h)}_{i,t}=p_{i,t+h}/p_{i,t}-1$ for $h\in\{1,5\}$. We rank each variable within each asset over its included sessions, then compute the Pearson correlation over the pooled asset--session pairs:
+\begin{equation}
+  \mathrm{IC}_h=\operatorname{Corr}_{(i,t)}
+     \bigl(\operatorname{PctRank}_i(h_{i,t}),
+           \operatorname{PctRank}_i(Y^{(h)}_{i,t})\bigr).
+  \label{eq:ic}
+\end{equation}
+The same-day coefficient measures contemporaneous association. In particular, dated news can describe a price movement that has already occurred by the close. The forward coefficients use cumulative returns from the decision close through the next one or five observed sessions. We also test the signal that drives the traded ranks. For each eligible date in a stock window, we compute Spearman correlation across assets between $s_{i,t}$ and the forward return, then average these daily correlations. Section~\ref{sec:experiments} describes eligibility, ties, and inference.

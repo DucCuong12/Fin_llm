@@ -1,0 +1,140 @@
+\documentclass[tikz,border=0pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{tgheros}
+\usepackage{newtxmath}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta}
+\renewcommand{\familydefault}{\sfdefault}
+
+\definecolor{ink}{HTML}{172C3D}
+\definecolor{muted}{HTML}{526674}
+\definecolor{edge}{HTML}{B9C9D4}
+\definecolor{teal}{HTML}{147D75}
+\definecolor{tea}{HTML}{EAF6F3}
+\definecolor{amber}{HTML}{9B5C21}
+\definecolor{cream}{HTML}{FFF4E7}
+\definecolor{bluegray}{HTML}{EDF3F8}
+\colorlet{assetA}{teal}
+\colorlet{assetB}{teal!68!white}
+\colorlet{assetC}{teal!38!white}
+\definecolor{cash}{HTML}{B9C7D3}
+\definecolor{soft}{HTML}{F7F9FB}
+
+\begin{document}
+\begin{tikzpicture}[
+  x=1mm,y=1mm,text=ink,font=\sffamily\fontsize{8.2}{10}\selectfont,
+  heading/.style={anchor=west,inner sep=0pt,font=\sffamily\bfseries\fontsize{9.5}{11}\selectfont},
+  left/.style={anchor=west,inner sep=0pt},
+  right/.style={anchor=east,inner sep=0pt},
+  detail/.style={font=\sffamily\fontsize{7.7}{9.2}\selectfont,text=muted,inner sep=0pt},
+  flow/.style={-{Stealth[length=1.35mm,width=1.15mm]},draw=muted,line width=.65pt},
+  marker/.style={circle,draw=ink,fill=white,inner sep=0pt,minimum size=1.65mm,line width=.60pt},
+  chip/.style={rounded corners=1pt,inner xsep=2.8pt,inner ysep=2pt},
+  card/.style={draw=edge,line width=.48pt,rounded corners=1.7pt,fill=soft}
+]
+\path[use as bounding box] (0,0) rectangle (122,-91);
+\node[heading] at (1,-3) {(a)\enspace Reconstruct the budget at close $t$};
+\node[detail,right] at (121,-3) {Illustrative stock example};
+
+% Time axis contrasts the observed interval at s with the decision at t.
+\draw[flow] (2,-13.2) -- (120.5,-13.2);
+\draw[amber,line width=1.25pt] (12,-13.2) -- (43,-13.2);
+\node[marker] at (12,-13.2) {};
+\node[marker] at (43,-13.2) {};
+\node[marker,fill=ink] at (113,-13.2) {};
+\node at (12,-9.3) {Close $s-1$};
+\node at (43,-9.3) {Close $s$};
+\node at (113,-9.3) {Close $t$};
+\fill[white] (70,-14.35) rectangle (74,-12);
+\draw[muted,line width=.55pt] (70.9,-14.25) -- (72.4,-12.05)
+  (72.05,-14.25) -- (73.55,-12.05);
+
+\node[chip,fill=tea] (past) at (11.7,-21.5) {Prior tilt $\tau_{i,s-1}$};
+\node[chip,fill=cream] (price) at (42.7,-21.5) {Observed return $r^{\mathrm{obs}}_{i,s}$};
+\draw[teal,line width=.55pt] (12,-14.2) -- (12,-18.8);
+\draw[amber,line width=.55pt] (43,-14.2) -- (43,-18.8);
+\node[chip,fill=bluegray,left] (pair) at (61,-21.5)
+  {Unscaled return $\displaystyle\tilde r_s=\tfrac{1}{|\mathcal B_s|}\sum_{i\in\mathcal B_s}\tau_{i,s-1}r^{\mathrm{obs}}_{i,s}$};
+
+% The two measured inputs join in a shared connector below the row.
+\draw[muted,line width=.55pt] (past.south) |- (42.7,-26.8) -- (price.south);
+\draw[flow] (42.7,-26.8) -- (58.1,-26.8) |- (pair.west);
+
+% These illustrative daily returns in percent yield about 25% annualised
+% population volatility at 252 trading days, as in the overview figure.
+\draw[card,fill=cream!48] (1,-30.5) rectangle (83,-59.4);
+\node[left,font=\bfseries] at (4,-34.8) {Trailing 20 unscaled returns};
+\draw[edge,line width=.48pt] (4.25,-46) -- (80.2,-46);
+\node[detail] at (2.95,-46) {0};
+
+\foreach \value [count=\index from 0] in {
+ -.273,.954,-1.499,2.044,-.954,.477,-2.180,1.499,2.521,-1.703,
+ -.477,1.703,-2.521,.273,2.180,-2.044,.954,-.954,1.499,-1.499
+}{
+  \pgfmathsetmacro{\center}{10.6+\index*3.51}
+  \pgfmathsetmacro{\endpoint}{-46+2.55*\value}
+  \ifnum\index=19
+    \fill[amber] (\center-.98,-46) rectangle (\center+.98,\endpoint);
+  \else\ifnum\index=8
+    \fill[teal] (\center-.98,-46) rectangle (\center+.98,\endpoint);
+  \else
+    \fill[amber!55] (\center-.98,-46) rectangle (\center+.98,\endpoint);
+  \fi\fi
+}
+\draw[densely dashed,muted,line width=.50pt] (5,-50.1) rectangle (6.9,-46);
+\draw[edge,densely dashed,line width=.46pt] (8.4,-39) -- (8.4,-52.6);
+\draw[amber,line width=.58pt] (9.2,-53.5) |- (77.7,-54.8) -- (77.7,-53.5);
+\node[detail] at (6.75,-57.05) {$t-20$};
+\node[detail] at (20,-57.05) {$t-19$};
+\node[detail] at (38.68,-57.05) {$s$};
+\node[detail] at (76.9,-57.05) {$t$};
+\draw[muted,line width=.45pt] (11,-55) -- (15.85,-56.85);
+\node[detail,text=teal] at (38.68,-38.05) {$\tilde r_s$};
+
+\draw[card,fill=bluegray] (88,-30.5) rectangle (121,-59.4);
+\draw[flow,draw=amber] (83,-45.2) -- (88,-45.2);
+\node[font=\sffamily\bfseries\fontsize{7.6}{9}\selectfont] at (104.5,-34.8) {Annualised volatility};
+\node at (104.5,-39.6) {$\hat\sigma_t=25\%$};
+\draw[edge,line width=.45pt] (91,-43.3) -- (118,-43.3);
+\node[font=\bfseries] at (104.5,-47.5) {Invested fraction};
+\node[font=\fontsize{9}{10}\selectfont] at (104.5,-53.35)
+  {$\lambda_t=20\%/25\%=0.80$};
+
+\node[detail,left] at (1,-63.1)
+  {The tilt chosen at close $t$ can enter the volatility estimate only after a later return is observed.};
+
+% Fix the same budget for both compositions. Values are percentages of capital.
+\node[heading] at (1,-69.3) {(b)\enspace Match the daily budget};
+\node[detail,right] at (121,-69.3) {Same $\lambda_t^{\mathrm{ref}}=0.80$ in both portfolios};
+\draw[card] (1,-73) rectangle (59.9,-90.7);
+\draw[card] (62.1,-73) rectangle (121,-90.7);
+\node[left,font=\bfseries] at (4,-76.6) {Equal weights};
+\node[left,font=\bfseries] at (65.1,-76.6) {News ranks};
+\node[detail,right] at (56.9,-76.6) {$\boldsymbol q_t=(1,1,1)/3$};
+\node[detail,right] at (118,-76.6) {$\boldsymbol q_t=(1.5,1,0.5)/3$};
+
+\newcommand{\capitalbar}[2]{
+  \pgfmathsetmacro{\barend}{#1+52.9}
+  \pgfmathsetmacro{\asplit}{#1+52.9*#2}
+  \pgfmathsetmacro{\bsplit}{#1+52.9*(#2+4/15)}
+  \pgfmathsetmacro{\csplit}{#1+52.9*.8}
+  \fill[assetA] (#1,-87.3) rectangle (\asplit,-80.8);
+  \fill[assetB] (\asplit,-87.3) rectangle (\bsplit,-80.8);
+  \fill[assetC] (\bsplit,-87.3) rectangle (\csplit,-80.8);
+  \fill[cash] (\csplit,-87.3) rectangle (\barend,-80.8);
+  \draw[white,line width=.55pt] (\asplit,-87.3) -- (\asplit,-80.8)
+    (\bsplit,-87.3) -- (\bsplit,-80.8) (\csplit,-87.3) -- (\csplit,-80.8);
+}
+\capitalbar{4}{4/15}
+\capitalbar{65.1}{.4}
+\tikzset{segment/.style={inner sep=0pt,font=\sffamily\bfseries\fontsize{7.4}{8.5}\selectfont,align=center}}
+\node[segment,text=white] at (11.05,-84.05) {A\\[-.2pt]26.7\%};
+\node[segment] at (25.15,-84.05) {B\\[-.2pt]26.7\%};
+\node[segment] at (39.27,-84.05) {C\\[-.2pt]26.7\%};
+\node[segment] at (51.61,-84.05) {Cash\\[-.2pt]20\%};
+\node[segment,text=white] at (75.68,-84.05) {A\\[-.2pt]40.0\%};
+\node[segment] at (93.31,-84.05) {B\\[-.2pt]26.7\%};
+\node[segment,font=\sffamily\bfseries\fontsize{6.65}{8}\selectfont] at (103.92,-84.05) {C\\[-.2pt]13.3\%};
+\node[segment] at (112.71,-84.05) {Cash\\[-.2pt]20\%};
+\end{tikzpicture}
+\end{document}

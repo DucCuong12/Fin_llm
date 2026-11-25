@@ -1,0 +1,4 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Using financial news in portfolio allocation raises a question of attribution when a trading policy both interprets text and sets aggregate exposure. We propose VolTilt, a long-only allocator in which realised price returns determine a volatility budget and a large language model informs only the ranking of assets. We extract event records under a fixed schema and retain articles that identify the asset as their main subject and contain specific quantitative disclosures. The resulting event scores determine a bounded rank tilt around equal weights. The structured records let us audit the inputs to the tilt, and disabling the tilt while holding the daily budget fixed isolates the effect of news on allocation. In future work, we will examine intraday-timestamped and post-cutoff news, extend the analysis to longer horizons and larger asset universes, and evaluate larger models.

@@ -1,0 +1,119 @@
+\documentclass[tikz,border=4pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[sfdefault,type1,scaled=0.95]{roboto}
+\usepackage{amsmath,amssymb,graphicx}
+\usetikzlibrary{arrows.meta,calc,backgrounds,positioning,fit}
+
+% Tabler outline icons (MIT), recoloured, in ./icons_tl
+\newcommand{\ti}[2][1.45em]{\includegraphics[height=#1]{icons_tl/#2.pdf}}
+\newcommand{\icl}[3][1.75em]{\begin{tabular}{@{}c@{\hspace{5pt}}c@{}}\raisebox{\dimexpr-0.5\height+0.3em}{\includegraphics[height=#1]{icons_tl/#2.pdf}} & \begin{tabular}{@{}c@{}}#3\end{tabular}\end{tabular}}
+
+% ---------------- palette (not FinMem) ----------------
+\definecolor{ink}{HTML}{1E1E1E}
+\definecolor{teal}{HTML}{1F8A7A}   \definecolor{tealbg}{HTML}{E3F2EF}
+\definecolor{slate}{HTML}{2F4858}  \definecolor{slatebg}{HTML}{E7ECF1}
+\definecolor{amber}{HTML}{D9711A}  \definecolor{amberbg}{HTML}{FCE9D6}
+\definecolor{ghost}{HTML}{A3A3A3}  \definecolor{sub}{HTML}{555555}
+
+\tikzset{
+  >={Stealth[length=2mm,width=1.6mm]},
+  every node/.style={font=\footnotesize},
+  box/.style={draw=#1, fill=white, line width=0.8pt, rounded corners=3pt, align=center,
+              inner sep=3pt, minimum height=1.3cm},
+  gbox/.style={draw=ghost, fill=white, line width=0.6pt, rounded corners=3pt, align=center,
+               inner sep=3pt, minimum height=1.0cm, minimum width=1.5cm, text=ghost},
+  tarr/.style={->, line width=0.8pt, draw=teal},
+  sarr/.style={->, line width=0.8pt, draw=slate},
+  garr/.style={->, line width=0.6pt, draw=ghost},
+  fb/.style={->, line width=1.6pt, draw=amber, >={Stealth[length=2.6mm,width=2.1mm]}},
+  node distance=0.42cm,
+}
+\newcommand{\sublbl}[1]{{\scriptsize\color{sub}#1}}
+
+\begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\fontseries{b}\selectfont\boldmath
+\DeclareRobustCommand{\bfseries}{\fontseries{eb}\selectfont}
+\begin{tikzpicture}
+
+% =====================================================================
+% day t (full detail): event-tilt lane, built left to right
+% =====================================================================
+\node[box=teal] (news) at (5.3,6.0) {\ti{news}\\[1pt]News\\\sublbl{per asset}};
+\node[box=teal, right=0.88cm of news] (read) {\ti{file-search}\\[1pt]LLM reader\\\sublbl{per article}};
+\node[box=teal, right=0.88cm of read] (gate) {\ti{filter}\\[1pt]Gate\\\sublbl{main subject}\\[-2pt]\sublbl{$\wedge$ numbers}};
+\node[box=teal, right=0.88cm of gate] (tilt) {\ti{adjustments-horizontal}\\[1pt]Rank tilt $\tau_{i,t}$\\\sublbl{EMA, then rank}};
+\draw[tarr] (news) -- (read);
+\draw[tarr] (read) -- (gate);
+\draw[tarr] (gate) -- (tilt);
+
+% volatility-budget lane, built right to left from the budget (aligned under the tilt)
+\node[box=slate] (bud) at (tilt|-0,1.8) {\ti{gauge}\\[1pt]Budget $\lambda_t$\\\sublbl{$\min(1,\sigma^*/\hat\sigma_t)$}};
+\node[box=slate, left=of bud] (vol) {\ti{activity}\\[1pt]Volatility\\\sublbl{$\hat\sigma_t$, 20 days}};
+\node[box=amber, fill=amberbg, line width=1.3pt, left=of vol] (tret)
+  {\ti{chart-area-line}\\[1pt]Tilted-portfolio return\\[1pt]{\scriptsize $\tilde r_t=\frac{1}{N}\sum_i \tau_{i,t-1}\, r_{i,t}$}};
+\node[box=slate, left=of tret] (px) {\ti{trending-up}\\[1pt]Prices\\\sublbl{$r_{i,t}$}};
+\draw[sarr] (px) -- (tret);
+\draw[sarr] (tret) -- (vol);
+\draw[sarr] (vol) -- (bud);
+
+% positions
+\node[box=ink, line width=1.1pt, minimum height=1.0cm] (w) at (tilt|-0,3.9)
+  {\icl[1.6em]{chart-pie}{Positions\\[1pt]$w_{i,t}=\lambda_t\,\tau_{i,t}$}};
+\draw[tarr, line width=1.0pt] (tilt) -- (w);
+\draw[sarr, line width=1.0pt] (bud) -- (w);
+
+% frame of day t
+\node[fit=(news)(px)(tilt)(bud)(w), inner xsep=9pt, inner ysep=12pt] (dayT) {};
+
+% =====================================================================
+% days t-1 and t+1 (ghosted)
+% =====================================================================
+\coordinate (xA) at ($(dayT.west)+(-1.25,0)$);
+\node[gbox] (tauA) at (xA|-0,6.0) {$\tau_{i,t-1}$};
+\node[gbox] (wA)   at (xA|-0,3.9) {$w_{i,t-1}$};
+\node[gbox] (lamA) at (xA|-0,1.8) {$\lambda_{t-1}$};
+\draw[garr] (tauA) -- (wA);
+\draw[garr] (lamA) -- (wA);
+
+\coordinate (xC) at ($(dayT.east)+(1.5,0)$);
+\node[gbox] (tauC) at (xC|-0,6.0) {$\tau_{i,t+1}$};
+\node[gbox] (wC)   at (xC|-0,3.9) {$w_{i,t+1}$};
+\node[gbox, minimum width=1.85cm] (lamC) at (xC|-0,1.8) {$\tilde r_{t+1}\!\to\!\lambda_{t+1}$};
+\draw[garr] (tauC) -- (wC);
+\draw[garr] (lamC) -- (wC);
+
+% =====================================================================
+% background: swim-lanes, time axis, day-t frame
+% =====================================================================
+\coordinate (L) at ($(tauA.west)+(-0.45,0)$);
+\coordinate (R) at ($(lamC.east)+(0.3,0)$);
+\begin{scope}[on background layer]
+  \fill[tealbg, rounded corners=6pt]  (L|-0,5.1) rectangle (R|-0,6.9);
+  \fill[slatebg, rounded corners=6pt] (L|-0,0.9) rectangle (R|-0,2.7);
+  \draw[ink!55, line width=0.7pt, rounded corners=7pt, dash pattern=on 3pt off 2pt] (dayT.south west) rectangle (dayT.north east);
+\end{scope}
+\node[rotate=90, text=teal, font=\small\bfseries]  at ($(L|-0,6.0)+(-0.35,0)$) {Event tilt};
+\node[rotate=90, text=ink,  font=\small\bfseries]  at ($(L|-0,3.9)+(-0.35,0)$) {Positions};
+\node[rotate=90, text=slate, font=\small\bfseries, align=center] at ($(L|-0,1.8)+(-0.42,0)$) {Volatility\\[-2pt]budget};
+
+\coordinate (Y) at (0,7.75);
+\draw[->, line width=0.9pt, draw=ink] (L|-Y) -- ($(R|-Y)+(0.15,0)$);
+\foreach \n/\lab/\f in {tauA/{close of day $t{-}1$}/\footnotesize, dayT/{close of day $t$}/\small\bfseries, tauC/{close of day $t{+}1$}/\footnotesize}{
+  \draw[line width=0.9pt] ($(\n|-Y)+(0,-0.1)$) -- ($(\n|-Y)+(0,0.1)$);
+  \node[anchor=south, font=\f] at ($(\n|-Y)+(0,0.12)$) {\lab};}
+\node[text=ghost, font=\large] at ($(L|-0,7.35)+(0.25,0)$) {$\cdots$};
+\node[text=ghost, font=\large] at ($(R|-0,7.35)+(-0.2,0)$) {$\cdots$};
+
+% =====================================================================
+% the VolTilt coupling: yesterday's tilts -> today's risk
+% =====================================================================
+\draw[fb] (tauA.south east) .. controls +(1.0,-1.5) and +(-0.4,1.4) .. ($(tret.north west)+(0.35,0)$);
+\node[text=amber!85!black, align=left, anchor=west, font=\footnotesize\bfseries]
+  at ($(tret.north west)+(0.15,1.25)$) {\ti[1.3em]{history}\;yesterday's tilts $\tau_{i,t-1}$\\[1pt]
+  {\scriptsize\color{sub} set the portfolio whose risk is measured}};
+\draw[fb] (tilt.south east) .. controls +(0.9,-1.0) and +(-0.3,1.3) .. ($(lamC.north west)+(0.25,0)$);
+\node[text=amber!85!black, font=\footnotesize\bfseries, anchor=west] at ($(w.east)+(0.42,0.35)$) {$\tau_{i,t}$};
+
+\end{tikzpicture}
+\end{document}

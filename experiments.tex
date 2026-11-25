@@ -1,0 +1,289 @@
+\section{Experiments}
+\label{sec:experiments}
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}\setlength{\floatsep}{10pt plus 2pt minus 2pt}\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+We first establish the portfolio-level performance pattern (RQ1). Because this comparison combines changes in asset composition and invested capital, we then assess the incremental contribution of news using matched-budget comparisons, temporal controls, and forward-signal diagnostics (RQ2). Finally, we examine sensitivity to model choice and market conditions, distinguishing news-enabled tests from price-only scaling tests (RQ3).
+
+\subsection{Experimental Setup}
+
+\paragraph{Benchmarks and windows.}
+We evaluate three settings from FINSABER and InvestorBench, covering 13 asset--setting entries and 11 distinct assets. The FINSABER stock window (W1, 2022-10-05 to 2023-06-10) contains TSLA, AAPL, MSFT, GOOG, AMZN, and NFLX~\cite{li2025finsaber}. InvestorBench contributes MSFT, JNJ, HON, UVV, and NFLX (2020-10-01 to 2021-05-06), and BTC and ETH (2023-04-05 to 2023-11-05)~\cite{li2024investorbench}. We warm up the risk and scoring rules from the available panel history, starting on 2021-06-01 for W1. NFLX has no labelled W1 news but remains eligible when its price is available. The exploratory W2 window covers the other five FINSABER stocks (2023-06-12 to 2023-12-15), with warm-up starting in January 2023. The longer windows, 2020-01-02 to 2024-12-31 and 2025-01-02 to 2026-11-13, use price data alone.
+
+\paragraph{Baselines.}
+We compare against the fully invested equal-weight reference, SMA 50/200 and MACD $(12,26,9)$ crossover rules, and volatility scaling alone. We replay saved positions for FinMem~\cite{yu2024finmem}, FinCon~\cite{yu2024fincon}, TradingGPT~\cite{li2023tradinggpt}, and the unattacked base agent used in AutoRedTrader~\cite{liu2026autoredtrader}. Where official code is unavailable, we reimplement the method and substitute public data for proprietary inputs. FLAG-Trader~\cite{wang2025flagtrader} is excluded from the gpt-oss-120b comparison because its reinforcement-learning implementation fine-tunes Qwen weights.
+
+\paragraph{Backbones, labellers, and implementation.}
+The main comparisons use gpt-oss-120b for event labelling and each LLM agent. We repeat the stock ablations, score controls, and budget--composition analyses with four cached labellers: Qwen3-8B, gpt-oss-20b, and gpt-oss-120b locally, and gpt-4o-mini through the OpenAI API. We extract events at temperature $0$. For gpt-oss we include the schema in the prompt and validate the response. The cached replay fixes price panels, label files, dates, warm-up, and hyperparameters. Both stock settings use the selected rank tilt and crypto uses unit tilts. The code checks that the main, full-ablation, and default-sensitivity Sharpe ratios match, and that the two-asset VolTilt and volatility-only weights and returns agree elementwise.
+
+% Run logs in multi_agent_desk/reports4/: paper_benchmark.md, voltilt4_oss.md, and paper120_oss120_oss120.md, respectively.
+For the tabulated gpt-oss-120b agents, we replay four runs per asset. The AutoRedTrader base agent runs at temperature $0$ and its repeats reflect serving nondeterminism. Table~\ref{tab:main} constructs each portfolio from the corresponding repeat across assets and reports the mean and sample SD of portfolio metrics. Table~\ref{tab:summary} averages performance over repeats within each asset--setting entry and then across entries. For ranks, wins, and paired tests we use the median Sharpe over repeats within each entry. The nine ranked methods cover every entry. A tie shares the average rank.
+
+\paragraph{Evaluation metrics and statistical protocol.}
+We apply Eq.~\eqref{eq:portret} at 5 bps for the main runs. The 3 bps W1 check holds positions and dates fixed and changes only the coefficient in the cost proxy. On scored dates, W1 has all $1{,}020$ asset--date prices and all returns span adjacent panel closes. InvestorBench stocks and crypto lack 24 of 745 and 30 of 428 price entries, respectively. Their evaluated legs include 19 and 22 returns spanning multiple panel dates. We therefore report these settings under the observed-leg accounting convention of Section~\ref{sec:problem}. We separately check actual capital weights and drifted turnover on the complete W1 panel.
+
+We compound daily net returns to compute cumulative return (CR). Maximum drawdown (MDD) is the minimum proportional deviation from the running wealth peak, including initial wealth of one. We annualise sample volatility and Sharpe (SR) using $\sqrt P$, with zero cash yield and $P=252$ for stocks or $365$ for cryptocurrencies. The unadjusted two-sided Wilcoxon tests and wins in Table~\ref{tab:summary} use the same paired median-Sharpe entries as the ranking. Short windows and shared assets limit the interpretation of the pooled tests.
+
+For the pooled raw-score IC, we require a labelled main-subject article and usable price observations. The impact sum is zero on days when no article qualifies. We retain assets with at least 30 eligible sessions and assign average ranks to ties. For the cross-sectional IC we evaluate the smoothed score before ranking, over stocks with an observed close and the relevant subsequent closes within each evaluation panel. We require at least three valid assets and nonconstant scores and returns, and average tied ranks. We report the coverage and tie counts for this traded-signal diagnostic.
+
+\paragraph{Design protocol.}
+We select the volatility target on six stocks from 2001-01-02 to 2019-12-29, split at 2010-06-30. The alternatives take the larger of $20\%$ and $0.5$ or $0.75$ times trailing 252-date volatility. We select the tilt rule by comparing equal weight, rank tilt, and magnitude tilt on two-, three-, and four-stock subsets of TSLA, AAPL, MSFT, and GOOG from 2019-12-30 to 2022-10-05, split at 2021-05-18. We require a positive Sharpe gain in both halves and select the qualifying variant with the largest full-window improvement. This selects the fixed target, unit tilts for pairs, and rank tilt for larger universes. We freeze the resulting configuration for replay. The benchmark windows informed earlier development, so these are comparative backtests.
+
+\subsection{RQ1: Comparison with Baselines}
+
+We compare VolTilt with the fully invested equal-weight reference to assess the policy as a whole, including the decision to hold cash. Volatility scaling alone uses the same portfolio risk rule with unit tilts and provides the direct news-off comparator. We then use the pooled asset--setting results to assess how widely the portfolio pattern holds (Table~\ref{tab:summary}).
+
+In W1, VolTilt raises Sharpe from $1.27$ to $1.76$ relative to equal weight and reduces maximum drawdown from $-22.2\%$ to $-12.0\%$, with cumulative return of $+26.2\%$ (Table~\ref{tab:main}). Its Sharpe is close to volatility scaling alone ($1.78$). On InvestorBench stocks the corresponding Sharpe ratios are $2.39$ for VolTilt, $2.34$ for equal weight, and $2.25$ for scaling alone. On crypto, VolTilt and scaling alone are identical (Sharpe $0.78$), while equal weight reaches $0.98$. Across entries, mean Sharpe is $1.22$ for VolTilt and $1.28$ for volatility scaling (paired Wilcoxon $p=0.520$). These differences motivate comparing the two compositions at a matched budget.
+
+\begin{table}[!btp]
+\centering
+\caption{Portfolio performance across three settings with gpt-oss-120b at 5 bps. Agents report four-run mean and sample SD. Vol. is annualised volatility (\%). Bold marks higher SR and CR, shallower MDD, and lower volatility.}
+\label{tab:main}
+{\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr}
+\toprule
+Method & SR & CR & MDD & Vol. \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{FINSABER W1 (6 stocks)}} \\
+Equal weight & $1.27$ & $\mathbf{+27.6}$ & $-22.2$ & $32.7$ \\
+SMA 50/200 & $\mathbf{2.39}$ & $+15.4$ & $\mathbf{-3.7}$ & $\mathbf{9.1}$ \\
+MACD & $1.42$ & $+20.0$ & $-19.0$ & $20.5$ \\
+FinMem & $-0.01\pm0.92$ & $-0.9\pm12.4$ & $-14.2\pm4.2$ & $19.6\pm0.6$ \\
+FinCon & $0.64\pm0.94$ & $+8.3\pm14.0$ & $-13.2\pm1.0$ & $19.8\pm0.2$ \\
+TradingGPT & $1.45\pm0.15$ & $+16.1\pm2.1$ & $-11.1\pm0.5$ & $16.2\pm0.2$ \\
+AutoRedTrader & $1.39\pm0.55$ & $+23.1\pm10.7$ & $-10.8\pm0.5$ & $23.9\pm0.7$ \\
+Vol scaling & $1.78$ & $+26.5$ & $-13.1$ & $20.9$ \\
+\textbf{VolTilt} & $1.76$ & $+26.2$ & $-12.0$ & $20.8$ \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{IB stocks (5)}} \\
+Equal weight & $2.34$ & $\mathbf{+24.8}$ & $-10.3$ & $16.6$ \\
+SMA 50/200 & $2.09$ & $+11.7$ & $\mathbf{-3.2}$ & $\mathbf{9.2}$ \\
+MACD & $1.03$ & $+5.9$ & $-5.8$ & $9.8$ \\
+FinMem & $-1.15\pm1.04$ & $-7.7\pm6.1$ & $-11.8\pm4.4$ & $11.8\pm0.7$ \\
+FinCon & $-0.70\pm1.44$ & $-5.8\pm10.7$ & $-14.5\pm7.9$ & $13.8\pm0.8$ \\
+TradingGPT & $1.96\pm0.12$ & $+11.0\pm0.5$ & $-6.2\pm0.4$ & $9.3\pm0.2$ \\
+AutoRedTrader & $-0.19\pm0.96$ & $-1.7\pm7.7$ & $-12.5\pm3.3$ & $14.1\pm0.6$ \\
+Vol scaling & $2.25$ & $+23.1$ & $-10.3$ & $16.2$ \\
+\textbf{VolTilt} & $\mathbf{2.39}$ & $+23.6$ & $-10.2$ & $15.5$ \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{IB crypto (2)}} \\
+Equal weight & $\mathbf{0.98}$ & $\mathbf{+19.4}$ & $-23.1$ & $38.4$ \\
+SMA 50/200 & $-1.00$ & $-10.7$ & $-19.4$ & $\mathbf{17.7}$ \\
+MACD & $0.96$ & $+13.3$ & $-17.9$ & $25.7$ \\
+FinMem & $-0.48\pm0.60$ & $-9.0\pm8.2$ & $-22.0\pm6.0$ & $28.5\pm2.3$ \\
+FinCon & $0.11\pm0.95$ & $+0.2\pm16.6$ & $-28.6\pm12.6$ & $33.2\pm0.8$ \\
+TradingGPT & $0.80\pm0.17$ & $+8.8\pm2.3$ & $\mathbf{-14.9\pm0.8}$ & $20.3\pm0.5$ \\
+AutoRedTrader & $0.26\pm0.56$ & $+2.3\pm10.4$ & $-32.1\pm7.0$ & $32.5\pm0.8$ \\
+Vol scaling & $0.78$ & $+10.1$ & $-16.2$ & $24.8$ \\
+\textbf{VolTilt} & $0.78$ & $+10.1$ & $-16.2$ & $24.8$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\begin{table}[!btp]
+\centering
+\caption{Mean performance across 13 asset--setting entries at 5 bps (gpt-oss-120b).}
+\label{tab:summary}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrr}
+\toprule
+Method & SR & CR & MDD & Rank & Wins & $p$ \\
+\midrule
+Equal weight & $1.16$ & $\mathbf{+22.8}$ & $-20.6$ & $3.00$ & 7/13 & 0.635 \\
+SMA 50/200 & $0.79$ & $+9.9$ & $\mathbf{-9.8}$ & $4.69$ & 9/13 & 0.094 \\
+MACD & $0.65$ & $+12.9$ & $-17.1$ & $5.69$ & 10/13 & 0.021 \\
+FinMem & $-0.32$ & $-3.6$ & $-25.5$ & $7.85$ & 12/13 & 0.001 \\
+FinCon & $-0.08$ & $+1.6$ & $-28.1$ & $7.62$ & 12/13 & 0.002 \\
+TradingGPT & $1.06$ & $+12.0$ & $-11.5$ & $4.15$ & 8/13 & 0.094 \\
+AutoRedTrader & $0.31$ & $+12.7$ & $-26.3$ & $5.92$ & 10/13 & 0.027 \\
+Vol scaling & $\mathbf{1.28}$ & $+20.7$ & $-14.8$ & $\mathbf{2.77}$ & 5/13 & 0.520 \\
+\textbf{VolTilt} & $1.22$ & $+20.6$ & $-14.4$ & $3.31$ & --- & --- \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\subsection{RQ2: Incremental Value of the News Tilt}
+
+\paragraph{Matched-budget decomposition.}
+We compare news-ranked and equal-weight compositions at both the equal-weight and news-derived budgets. The diagonal contrast changes both rules' outputs and measures the full-policy difference. Matching the budget holds daily invested capital fixed and leaves realised risk and turnover free to differ. Table~\ref{tab:matched-budget} reports all three contrasts for each labeller. With gpt-oss-120b in W1, Sharpe is $1.776$ and $1.716$ for equal weight and news ranks under the equal-weight budget, and $1.817$ and $1.765$ under the news-derived budget. The corresponding InvestorBench stock values are $2.250$, $2.359$, $2.278$, and $2.389$. The composition differences vary in sign across labellers. They give mixed evidence about the incremental value of the tested news signal.
+
+\begin{table}[!btp]
+\centering
+\caption{Sharpe differences in the budget--composition comparison at 5 bps.}
+\label{tab:matched-budget}
+{\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llccc}
+\toprule
+Setting & Labeller & $\Delta_{\mathrm{comp}}(\lambda^{\mathrm{eq}})$ & $\Delta_{\mathrm{comp}}(\lambda^{\mathrm{news}})$ & $\Delta_{\mathrm{policy}}$ \\
+\midrule
+W1 & Qwen3-8B & $+0.04$ & $+0.04$ & $+0.10$ \\
+ & gpt-oss-20b & $-0.03$ & $-0.04$ & $+0.04$ \\
+ & gpt-oss-120b & $-0.06$ & $-0.05$ & $-0.01$ \\
+ & gpt-4o-mini & $+0.07$ & $+0.06$ & $+0.13$ \\
+\addlinespace
+IB stocks & Qwen3-8B & $+0.01$ & $+0.01$ & $+0.02$ \\
+ & gpt-oss-20b & $+0.18$ & $+0.18$ & $+0.19$ \\
+ & gpt-oss-120b & $+0.11$ & $+0.11$ & $+0.14$ \\
+ & gpt-4o-mini & $-0.24$ & $-0.24$ & $-0.23$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\begin{table}[!btp]
+\centering
+\caption{Sharpe of allocation variants at 5 bps. Full VolTilt uses the selected rank rule for stocks and unit tilts for crypto. Selected tilt only fixes invested capital at one. The forced rank and magnitude rows apply their tilts with portfolio scaling.}
+\label{tab:ablation}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrr}
+\toprule
+\multicolumn{2}{@{}l}{Price-only policies} & W1 & IB stocks & IB crypto &  \\
+\midrule
+\multicolumn{2}{@{}l}{Equal weight} & $1.27$ & $\mathbf{2.34}$ & $\mathbf{0.98}$ &  \\
+\multicolumn{2}{@{}l}{Per-asset scaling} & $1.67$ & $2.22$ & $0.66$ &  \\
+\multicolumn{2}{@{}l}{Portfolio scaling} & $\mathbf{1.78}$ & $2.25$ & $0.78$ &  \\
+\midrule
+Setting & Variant & Qwen3-8B & gpt-oss-20b & gpt-oss-120b & gpt-4o-mini \\
+\midrule
+W1 & Scaled magnitude & $\mathbf{1.87}$ & $1.77$ & $\mathbf{1.89}$ & $1.79$ \\
+ & Selected tilt only & $1.31$ & $1.27$ & $1.23$ & $1.35$ \\
+ & Full VolTilt & $1.87$ & $\mathbf{1.82}$ & $1.76$ & $\mathbf{1.91}$ \\
+\addlinespace
+IB stocks & Scaled magnitude & $2.11$ & $2.26$ & $2.41$ & $2.11$ \\
+ & Selected tilt only & $\mathbf{2.37}$ & $\mathbf{2.54}$ & $\mathbf{2.46}$ & $\mathbf{2.12}$ \\
+ & Full VolTilt & $2.27$ & $2.44$ & $2.39$ & $2.02$ \\
+\addlinespace
+IB crypto & Forced rank + scaling & $0.39$ & $0.49$ & $0.39$ & $0.49$ \\
+ & Scaled magnitude & $0.47$ & $0.54$ & $0.38$ & $0.47$ \\
+ & Selected tilt only & $\mathbf{0.98}$ & $\mathbf{0.98}$ & $\mathbf{0.98}$ & $\mathbf{0.98}$ \\
+ & Full VolTilt & $0.78$ & $0.78$ & $0.78$ & $0.78$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\paragraph{Labeller ablation and controls.}
+The price-only ablation shows that portfolio scaling improves W1 Sharpe from $1.27$ to $1.78$ (Table~\ref{tab:ablation}). The full stock rows use rank tilt and portfolio scaling. Scaled magnitude uses clipped deviations from the cross-sectional mean, normalised by the historical running mean of the largest absolute deviation. The tilt-only row disables volatility scaling. For crypto we also test rank tilt with scaling by overriding the small-universe rule. The default crypto row uses unit tilts, so changing labellers or $k$ leaves its return series unchanged.
+
+The score controls in Table~\ref{tab:controls} use the same stock allocation rules as the full policy. The count control substitutes the number of main-subject articles with company figures for the summed impacts. The null independently circularly shifts each asset's raw daily score series by a random offset of at least 20 panel dates in either direction, then recomputes the EMA, ranks, and budget. We report the fraction of 1,000 shifted draws with a Sharpe gain at least as large as the observed gain. None of these one-sided tests rejects at the $5\%$ level. With gpt-oss-120b in W1, summing impacts from all main-subject reports gives a gain of $+0.15$ over scaling alone. Averaging only qualifying impacts gives $-0.02$. On InvestorBench stocks the corresponding gains are $-0.20$ and $+0.22$. The comparisons leave uncertainty about which score construction performs better.
+
+
+
+
+
+\begin{table}[!btp]
+\centering
+\caption{Sharpe gains of the stock portfolios over volatility scaling using LLM event scores or article counts. The $p$-value is from the circular-shift test.}
+\label{tab:controls}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrr}
+\toprule
+Labeller & Setting & Core & LLM & Count & $p$ \\
+\midrule
+Qwen3-8B & W1 & $1.78$ & $\mathbf{+0.10}$ & $-0.36$ & 0.117 \\
+ & IB stocks & $2.25$ & $\mathbf{+0.02}$ & $-0.06$ & 0.535 \\
+gpt-oss-20b & W1 & $1.78$ & $\mathbf{+0.04}$ & $-0.37$ & 0.151 \\
+ & IB stocks & $2.25$ & $\mathbf{+0.19}$ & $+0.05$ & 0.242 \\
+gpt-oss-120b & W1 & $1.78$ & $\mathbf{-0.01}$ & $-0.40$ & 0.269 \\
+ & IB stocks & $2.25$ & $\mathbf{+0.14}$ & $-0.22$ & 0.192 \\
+gpt-4o-mini & W1 & $1.78$ & $\mathbf{+0.13}$ & $-0.35$ & 0.057 \\
+ & IB stocks & $2.25$ & $-0.23$ & $\mathbf{-0.07}$ & 0.919 \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\begin{table}[!btp]
+\centering
+\caption{Pooled within-asset rank IC of raw gated scores. Forward returns span the next one or five sessions.}
+\label{tab:ic}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr}
+\toprule
+Labeller & Asset--dates & Same day & Next session & Next 5 sessions \\
+\midrule
+Qwen3-8B & 2310 & $+0.097$ & $+0.008$ & $+0.020$ \\
+gpt-oss-20b & 3016 & $+0.120$ & $+0.013$ & $+0.004$ \\
+gpt-oss-120b & 2748 & $\mathbf{+0.164}$ & $\mathbf{+0.030}$ & $-0.004$ \\
+gpt-4o-mini & 2226 & $+0.156$ & $+0.012$ & $\mathbf{+0.021}$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\paragraph{Signal diagnostics.}
+Table~\ref{tab:ic} reports positive contemporaneous associations for raw daily impacts. The forward correlations are smaller in magnitude. We distinguish these pooled raw-score associations from daily cross-sectional correlations of the smoothed scores used for trading. With gpt-oss-120b in W1, the smoothed-score IC is $-0.044$ at one session and $-0.067$ at five sessions. We use 170 and 166 dates, respectively, with ties on 107 dates at each horizon. On InvestorBench stocks, the corresponding coefficients are $-0.014$ and $-0.012$ over 149 and 145 dates, with no ties. The smoothed-score correlations vary in sign with the labeller. Date-only news can describe price moves already reflected in the same close.
+
+\paragraph{News-delay sensitivity.}
+We move each asset's gated score to its next observed session before updating the EMA. With gpt-oss-120b and a fixed equal-weight budget, the delayed tilt changes Sharpe by $-0.05$ in W1 and $+0.10$ on InvestorBench stocks. Recomputing the budget with the delayed tilt gives differences of $-0.005$ and $+0.14$ relative to volatility scaling alone. This tests when text can enter the score. We also delay the complete portfolio target to the next close in W1, so neither that close nor articles dated that day determine the executed weights.
+
+For this W1 execution check we start in cash and use actual capital fractions on the complete panel. We mark pre-trade holdings to market at the execution close, charge 5 bps on risky notional traded, and fund the charge before holding positions to the next close. Concretely, if $\bar{\boldsymbol a}_t$ are drifted capital weights and $\boldsymbol a_t$ is the target, the post-fee wealth fraction $g_t$ solves $g_t=1-c\sum_i|g_t a_{i,t}-\bar a_{i,t}|$. The next-period net return is $g_t(1+\sum_i a_{i,t}r_{i,t+1})-1$. The gpt-oss-120b full policy has Sharpe $1.76$ under same-close targets and $1.86$ with one-session delayed targets. The paired differences from the corresponding volatility-only policy are $-0.01$ and $+0.02$. This check uses W1 because its complete price panel supports marking all holdings at every execution close.
+
+\subsection{RQ3: Robustness}
+
+We examine sensitivity to the labeller, window, and implementation. We use W2 as an exploratory news-enabled comparison and Table~\ref{tab:regime} for longer price-only comparisons. Table~\ref{tab:w1} reuses W1 positions and dates at 3 bps. Table~\ref{tab:sens} varies costs, the risk target, the volatility window, and tilt strength.
+
+In W1 the selected news policy's Sharpe ranges from $1.76$ to $1.91$ across labellers. On InvestorBench stocks it ranges from $2.02$ to $2.44$ (Table~\ref{tab:ablation}). In the exploratory W2 runs, volatility scaling has Sharpe $0.89$. The autonomous news policy changes it by $+0.12$ with gpt-oss-20b and $-0.12$ with gpt-oss-120b. These contrasts include any differences in the budget path induced by historical tilts.
+
+
+
+\begin{table}[!btp]
+\centering
+\caption{Price-only portfolio scaling versus equal weight at 3 bps. $\Delta$SR is scaling minus equal weight.}
+\label{tab:regime}
+{\small
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrc}
+\toprule
+ & \multicolumn{3}{c}{Equal weight} & \multicolumn{3}{c}{Vol scaling} &  \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Assets, window & SR & CR & MDD & SR & CR & MDD & $\Delta$SR \\
+\midrule
+6, 2020--24 & $1.11$ & $\mathbf{+341.4}$ & $-46.4$ & $\mathbf{1.38}$ & $+275.5$ & $\mathbf{-31.6}$ & $+0.27$ \\
+6, 2025--26 & $\mathbf{0.62}$ & $\mathbf{+25.5}$ & $-26.2$ & $0.43$ & $+13.0$ & $\mathbf{-20.4}$ & $-0.19$ \\
+11, 2020--24 & $0.87$ & $\mathbf{+105.5}$ & $-29.0$ & $\mathbf{1.01}$ & $+96.9$ & $\mathbf{-16.6}$ & $+0.14$ \\
+11, 2025--26 & $\mathbf{1.52}$ & $\mathbf{+40.7}$ & $-13.5$ & $1.47$ & $+36.7$ & $\mathbf{-13.1}$ & $-0.04$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+Portfolio scaling reduces drawdown and cumulative return relative to equal weight in the longer price-only windows. Sharpe increases in the earlier window and falls in the later window for both universes. These tests concern price-only scaling. The supplementary W1 replay at 3 bps yields VolTilt Sharpe $1.78$, cumulative return $+26.5\%$, and maximum drawdown $-12.0\%$ (Table~\ref{tab:w1}).
+
+\begin{table}[!btp]
+\centering
+\caption{FINSABER W1 at 3 bps with gpt-oss-120b labels. Positions and dates are the same as in the corresponding 5 bps runs.}
+\label{tab:w1}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr}
+\toprule
+Method & CR & SR & MDD & Vol. \\
+\midrule
+Equal weight & $+27.6$ & $1.27$ & $-22.2$ & $32.7$ \\
+Vol scaling & $+26.6$ & $1.78$ & $-13.1$ & $20.9$ \\
+VolTilt & $+26.5$ & $1.78$ & $-12.0$ & $20.8$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+\begin{table}[!btp]
+\centering
+\caption{Sharpe sensitivity for gpt-oss-120b. Defaults are 5 bps, a 20\% target, a 20-date window and $k=0.5$. EW denotes equal weight.}
+\label{tab:sens}
+{\small
+\setlength{\tabcolsep}{2.75pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrrrrr}
+\toprule
+ &  & \multicolumn{3}{c}{Cost (bps)} & \multicolumn{2}{c}{Target} & \multicolumn{2}{c}{Window} & \multicolumn{2}{c}{Tilt $k$} &  \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
+ & Default & 0 & 10 & 20 & 15\% & 25\% & 10 & 60 & 0.25 & 0.75 & EW \\
+\midrule
+W1 & $1.76$ & $\mathbf{1.80}$ & $1.73$ & $1.65$ & $1.79$ & $1.63$ & $1.45$ & $1.53$ & $1.78$ & $1.73$ & $1.27$ \\
+IB stocks & $2.39$ & $2.45$ & $2.33$ & $2.22$ & $2.10$ & $\mathbf{2.46}$ & $2.25$ & $2.45$ & $2.34$ & $2.40$ & $2.34$ \\
+IB crypto & $0.78$ & $0.80$ & $0.76$ & $0.72$ & $0.56$ & $0.92$ & $\mathbf{1.26}$ & $1.19$ & $0.78$ & $0.78$ & $0.98$ \\
+\bottomrule
+\end{tabular*}}
+\end{table}
+
+Across the W1 cost sweep, the same positions yield Sharpe $1.80$ at zero cost and $1.65$ at 20 bps. Table~\ref{tab:sens} reproduces the main results at the default settings. In the two-asset setting, window and target changes affect Sharpe and the tilt-strength columns coincide because the tilt is disabled. The main comparisons retain the multiplier-based cost proxy and observed-leg averaging on incomplete panels. The drift-aware check covers only W1. The news-enabled windows informed earlier development and date-only records lack publication timestamps. Neither delaying execution nor changing the score rule supplies an independent post-cutoff test. Longer timestamped news panels and an explicit accounting rule for missing and exiting holdings would strengthen external validation.

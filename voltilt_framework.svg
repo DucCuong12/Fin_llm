@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="830" height="338"
+     viewBox="0 0 830 338" role="img" aria-labelledby="figure-title figure-description">
+<title id="figure-title">VolTilt daily portfolio construction</title>
+<desc id="figure-description">Above, a language model scores company news. The current ranks
+divide invested capital among assets A, B, and C. In Section 4.3, illustrated by two
+past close-to-close sessions, prior tilts weight the following asset returns. The volatility
+of twenty unscaled portfolio returns sets the invested fraction. In the illustrative
+next-session portfolio, 60 percent is invested in A, B, and C and the rest is cash.</desc>
+<defs>
+  <pattern id="cash-hatch" patternUnits="userSpaceOnUse" width="7" height="7">
+    <rect width="7" height="7" fill="#EDF0F4"/>
+    <path d="M-2 2L2 -2 M0 7L7 0 M5 9L9 5" stroke="#B5BFCB" stroke-width="1"/>
+  </pattern>
+  <marker id="arrow-slate" markerUnits="userSpaceOnUse" viewBox="0 0 11 10" refX="9" refY="5" markerWidth="10" markerHeight="9" orient="auto"><path d="M0 0L10 5 0 10 2.6 5Z" fill="#68798B"/></marker>
+  <marker id="arrow-teal" markerUnits="userSpaceOnUse" viewBox="0 0 11 10" refX="9" refY="5" markerWidth="11" markerHeight="10" orient="auto"><path d="M0 0L10 5 0 10 2.6 5Z" fill="#207D73"/></marker>
+  <marker id="arrow-amber" markerUnits="userSpaceOnUse" viewBox="0 0 11 10" refX="9" refY="5" markerWidth="11" markerHeight="10" orient="auto"><path d="M0 0L10 5 0 10 2.6 5Z" fill="#AC6818"/></marker>
+</defs>
+<rect width="830" height="338" fill="white"/>
+<g font-family="Lato, Arial, sans-serif" stroke-linejoin="round" stroke-linecap="round">
+<g id="current-allocation">
+<g id="news">
+<path d="M23 21 L64 15 Q68 14.5 69 19 L74 58 L31 64 Z" fill="#E0EAF4" stroke="#95ADC5" stroke-width="1.4"/>
+<path d="M19 24 Q19 21 23 21 H63 L72 30 V69 Q72 73 68 73 H23 Q19 73 19 69 Z" fill="#FBFDFE" stroke="#496582" stroke-width="2"/>
+<path d="M63 21 V30 H72" fill="#DFEAF4" stroke="#496582" stroke-width="1.6"/>
+<rect x="26" y="30" width="29" height="4" rx="1.4" fill="#577B9D" stroke="none" stroke-width="1"/>
+<rect x="26" y="40" width="19" height="17" rx="1.7" fill="#D9E9F1" stroke="none" stroke-width="1"/>
+<path d="M28.5 53 L33 48 L36 50 L42.5 43" fill="none" stroke="#4E899B" stroke-width="1.8"/>
+<path d="M49 41 H63 M49 47 H64 M49 53 H59 M26 62 H63 M26 66 H53" fill="none" stroke="#90A1B2" stroke-width="1.8"/>
+<text x="48" y="100" text-anchor="middle" font-size="18.5" font-weight="700" fill="#263649">Firm news</text>
+</g>
+<path d="M88 49 H119" fill="none" stroke="#68798B" stroke-width="2" marker-end="url(#arrow-slate)"/>
+<g id="event-scorer">
+<path d="M147 19 v7 M147 69 v7" fill="none" stroke="#76648A" stroke-width="2.1"/>
+<path d="M157 19 v7 M157 69 v7" fill="none" stroke="#76648A" stroke-width="2.1"/>
+<path d="M167 19 v7 M167 69 v7" fill="none" stroke="#76648A" stroke-width="2.1"/>
+<path d="M130 36 h7 M177 36 h7" fill="none" stroke="#76648A" stroke-width="2.1"/>
+<path d="M130 47 h7 M177 47 h7" fill="none" stroke="#76648A" stroke-width="2.1"/>
+<path d="M130 58 h7 M177 58 h7" fill="none" stroke="#76648A" stroke-width="2.1"/>
+<rect x="137" y="25" width="40" height="44" rx="6" fill="#EDE7F5" stroke="#78658F" stroke-width="2"/>
+<rect x="141" y="29" width="32" height="36" rx="4" fill="#FEFDFF" stroke="#B09CC3" stroke-width="1"/>
+<path d="M147 51 V57 M156.7 44 V57 M166 37 V57" fill="none" stroke="#8065A0" stroke-width="4"/>
+<text x="157" y="100" text-anchor="middle" font-size="18.5" font-weight="700" fill="#263649">LLM scores</text>
+</g>
+<path d="M192 49 H218" fill="none" stroke="#68798B" stroke-width="2" marker-end="url(#arrow-slate)"/>
+<g id="todays-tilt">
+<rect x="226" y="8" width="390" height="93" rx="14" fill="#EDF7F2" stroke="#A7CCBC" stroke-width="1.5"/>
+<text x="244" y="44" text-anchor="start" font-size="24" font-weight="700" fill="#155E56">Today’s tilt</text>
+<text x="244" y="72" text-anchor="start" font-size="18" font-weight="400" fill="#285A54">splits invested capital</text>
+<path d="M438 34 H463 C498 34 504 20 541 20 H571 V38 H541 C506 38 497 52 463 52 H438 Z" fill="#106961" stroke="none" stroke-width="1"/>
+<path d="M438 53 H463 C499 53 508 50 541 50 H571 V62 H541 C509 62 498 65 463 65 H438 Z" fill="#5272AD" stroke="none" stroke-width="1"/>
+<path d="M438 66 H463 C498 66 507 78 541 78 H571 V84 H541 C505 84 498 72 463 72 H438 Z" fill="#C1849C" stroke="none" stroke-width="1"/>
+<path d="M431 34 H427 V72 H431" fill="none" stroke="#708F86" stroke-width="1.7"/>
+<text x="587" y="35.5" text-anchor="middle" font-size="18" font-weight="700" fill="#106961">A</text>
+<text x="587" y="62.5" text-anchor="middle" font-size="18" font-weight="700" fill="#5272AD">B</text>
+<text x="587" y="87.5" text-anchor="middle" font-size="18" font-weight="700" fill="#835069">C</text>
+</g>
+<path d="M616 52 H721 Q732 52 732 63 V119" fill="none" stroke="#207D73" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+</g>
+<g id="historical-risk-budget">
+<rect x="4" y="123" width="622" height="207" rx="15" fill="#FFF9EC" stroke="#C89242" stroke-width="1.7"/>
+<path d="M19 123 H611 Q626 123 626 138 V165 H4 V138 Q4 123 19 123 Z" fill="#F5CE82" stroke="none" stroke-width="1"/>
+<path d="M5 165 H625" fill="none" stroke="#D9AD66" stroke-width="1.1"/>
+<path d="M20 145 A12 12 0 1 1 23 154 M20 145 V138 M20 145 H27" fill="none" stroke="#704510" stroke-width="2.3"/>
+<path d="M32 136 V144 L37 147" fill="none" stroke="#704510" stroke-width="2.2"/>
+<text x="55" y="152" text-anchor="start" font-size="24.5" font-weight="700" fill="#493317">Past tilts and returns set today’s risk budget</text>
+<text x="606" y="151" text-anchor="end" font-size="19.5" font-weight="700" fill="#6B461B">§4.3</text>
+<g id="matched-sessions">
+<text x="14" y="222" text-anchor="start" font-size="18" font-weight="700" fill="#4D4337">Prior tilt</text>
+<text x="14" y="267" text-anchor="start" font-size="17" font-weight="700" fill="#4D4337">Next-day</text>
+<text x="14" y="287" text-anchor="start" font-size="17.5" font-weight="700" fill="#4D4337">returns</text>
+<rect x="88" y="181" width="84" height="109" rx="6" fill="#FFFFFF" stroke="#D5BC92" stroke-width="1.4"/>
+<path d="M94 181 H166 Q172 181 172 187 V204 H88 V187 Q88 181 94 181 Z" fill="#F4E7CC" stroke="none" stroke-width="1"/>
+<path d="M89 204 H171" fill="none" stroke="#DCC9A6" stroke-width="1"/>
+<path d="M102 177.5 V183.5" fill="none" stroke="#966B31" stroke-width="2"/>
+<path d="M158 177.5 V183.5" fill="none" stroke="#966B31" stroke-width="2"/>
+<text x="108" y="198" text-anchor="middle" font-size="16" font-weight="700" fill="#614D31">Mon</text>
+<path d="M126 193 H134 m-3 -3 3 3 -3 3" fill="none" stroke="#8E744D" stroke-width="1.4"/>
+<text x="152" y="198" text-anchor="middle" font-size="16" font-weight="700" fill="#614D31">Tue</text>
+<rect x="103" y="227.0" width="10" height="6.0" rx="1.1" fill="#106961" stroke="none" stroke-width="1"/>
+<rect x="103" y="258" width="10" height="8" rx="1.1" fill="#106961" stroke="none" stroke-width="1"/>
+<rect x="125" y="215.0" width="10" height="18.0" rx="1.1" fill="#5272AD" stroke="none" stroke-width="1"/>
+<rect x="125" y="266" width="10" height="16" rx="1.1" fill="#5272AD" stroke="none" stroke-width="1"/>
+<rect x="147" y="221" width="10" height="12" rx="1.1" fill="#C1849C" stroke="none" stroke-width="1"/>
+<rect x="147" y="261" width="10" height="5" rx="1.1" fill="#C1849C" stroke="none" stroke-width="1"/>
+<path d="M96 233.7 H164 M96 266 H164" fill="none" stroke="#A9A69F" stroke-width="1"/>
+<path d="M89 243 H171" fill="none" stroke="#E8E1D6" stroke-width="1"/>
+<rect x="180" y="181" width="84" height="109" rx="6" fill="#FFFFFF" stroke="#D5BC92" stroke-width="1.4"/>
+<path d="M186 181 H258 Q264 181 264 187 V204 H180 V187 Q180 181 186 181 Z" fill="#F4E7CC" stroke="none" stroke-width="1"/>
+<path d="M181 204 H263" fill="none" stroke="#DCC9A6" stroke-width="1"/>
+<path d="M194 177.5 V183.5" fill="none" stroke="#966B31" stroke-width="2"/>
+<path d="M250 177.5 V183.5" fill="none" stroke="#966B31" stroke-width="2"/>
+<text x="200" y="198" text-anchor="middle" font-size="16" font-weight="700" fill="#614D31">Tue</text>
+<path d="M218 193 H226 m-3 -3 3 3 -3 3" fill="none" stroke="#8E744D" stroke-width="1.4"/>
+<text x="244" y="198" text-anchor="middle" font-size="16" font-weight="700" fill="#614D31">Wed</text>
+<rect x="195" y="221" width="10" height="12" rx="1.1" fill="#106961" stroke="none" stroke-width="1"/>
+<rect x="195" y="266" width="10" height="4" rx="1.1" fill="#106961" stroke="none" stroke-width="1"/>
+<rect x="217" y="227.0" width="10" height="6.0" rx="1.1" fill="#5272AD" stroke="none" stroke-width="1"/>
+<rect x="217" y="252" width="10" height="14" rx="1.1" fill="#5272AD" stroke="none" stroke-width="1"/>
+<rect x="239" y="215.0" width="10" height="18.0" rx="1.1" fill="#C1849C" stroke="none" stroke-width="1"/>
+<rect x="239" y="250" width="10" height="16" rx="1.1" fill="#C1849C" stroke="none" stroke-width="1"/>
+<path d="M188 233.7 H256 M188 266 H256" fill="none" stroke="#A9A69F" stroke-width="1"/>
+<path d="M181 243 H263" fill="none" stroke="#E8E1D6" stroke-width="1"/>
+<text x="176" y="313" text-anchor="middle" font-size="18" font-weight="400" fill="#635744">Weight each return</text>
+</g>
+<path d="M269 241 H288" fill="none" stroke="#AC6818" stroke-width="2" marker-end="url(#arrow-amber)"/>
+<g id="tilted-return-window">
+<text x="357" y="195" text-anchor="middle" font-size="19.5" font-weight="700" fill="#4D4337">Tilted returns</text>
+<rect x="294.0" y="243" width="4.65" height="9.399999999999999" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="300.35" y="226.08" width="4.65" height="16.919999999999998" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="306.7" y="235.48" width="4.65" height="7.52" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="313.05" y="243" width="4.65" height="13.16" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="319.4" y="218.56" width="4.65" height="24.439999999999998" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="325.75" y="243" width="4.65" height="15.04" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="332.1" y="243" width="4.65" height="7.52" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="338.45" y="229.84" width="4.65" height="13.16" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="344.8" y="222.32" width="4.65" height="20.68" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="351.15" y="243" width="4.65" height="11.28" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="357.5" y="235.48" width="4.65" height="7.52" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="363.85" y="212.92000000000002" width="4.65" height="30.08" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="370.2" y="243" width="4.65" height="20.68" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="376.55" y="233.6" width="4.65" height="9.399999999999999" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="382.9" y="243" width="4.65" height="5.64" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="389.25" y="224.2" width="4.65" height="18.799999999999997" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="395.6" y="243" width="4.65" height="28.2" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<rect x="401.95" y="227.96" width="4.65" height="15.04" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="408.3" y="237.36" width="4.65" height="5.64" rx="0.9" fill="#A66A27" stroke="none" stroke-width="1"/>
+<rect x="414.65" y="243" width="4.65" height="16.919999999999998" rx="0.9" fill="#CD9D59" stroke="none" stroke-width="1"/>
+<path d="M290 243 H424" fill="none" stroke="#997D56" stroke-width="1.25"/>
+<path d="M293 280 V285 H420 V280" fill="none" stroke="#C3A77B" stroke-width="1.4"/>
+<text x="357" y="312" text-anchor="middle" font-size="18" font-weight="400" fill="#635744">20-day volatility</text>
+</g>
+<path d="M431 241 H461" fill="none" stroke="#AC6818" stroke-width="2" marker-end="url(#arrow-amber)"/>
+<g id="investment-budget">
+<text x="541" y="195" text-anchor="middle" font-size="19.5" font-weight="700" fill="#4D4337">Risk budget</text>
+<path d="M496.01 259.88 A46 46 0 0 1 497.92 247.86 L504.63 249.86 A39 39 0 0 0 503.01 260.05 Z" fill="#BC7826" stroke="none" stroke-width="1"/>
+<path d="M498.61 245.72 A46 46 0 0 1 504.14 234.88 L509.90 238.85 A39 39 0 0 0 505.21 248.05 Z" fill="#BC7826" stroke="none" stroke-width="1"/>
+<path d="M505.46 233.06 A46 46 0 0 1 514.06 224.46 L518.31 230.02 A39 39 0 0 0 511.02 237.31 Z" fill="#BC7826" stroke="none" stroke-width="1"/>
+<path d="M515.88 223.14 A46 46 0 0 1 526.72 217.61 L529.05 224.21 A39 39 0 0 0 519.85 228.90 Z" fill="#BC7826" stroke="none" stroke-width="1"/>
+<path d="M528.86 216.92 A46 46 0 0 1 540.88 215.01 L541.05 222.01 A39 39 0 0 0 530.86 223.63 Z" fill="#BC7826" stroke="none" stroke-width="1"/>
+<path d="M543.12 215.01 A46 46 0 0 1 555.14 216.92 L553.14 223.63 A39 39 0 0 0 542.95 222.01 Z" fill="#BC7826" stroke="none" stroke-width="1"/>
+<path d="M557.28 217.61 A46 46 0 0 1 568.12 223.14 L564.15 228.90 A39 39 0 0 0 554.95 224.21 Z" fill="#E2D8C5" stroke="none" stroke-width="1"/>
+<path d="M569.94 224.46 A46 46 0 0 1 578.54 233.06 L572.98 237.31 A39 39 0 0 0 565.69 230.02 Z" fill="#E2D8C5" stroke="none" stroke-width="1"/>
+<path d="M579.86 234.88 A46 46 0 0 1 585.39 245.72 L578.79 248.05 A39 39 0 0 0 574.10 238.85 Z" fill="#E2D8C5" stroke="none" stroke-width="1"/>
+<path d="M586.08 247.86 A46 46 0 0 1 587.99 259.88 L580.99 260.05 A39 39 0 0 0 579.37 249.86 Z" fill="#E2D8C5" stroke="none" stroke-width="1"/>
+<path d="M509.00 261.00 L505.00 261.00" fill="none" stroke="#A08C70" stroke-width="1.3"/>
+<path d="M518.67 237.67 L515.84 234.84" fill="none" stroke="#A08C70" stroke-width="1.3"/>
+<path d="M542.00 228.00 L542.00 224.00" fill="none" stroke="#A08C70" stroke-width="1.3"/>
+<path d="M565.33 237.67 L568.16 234.84" fill="none" stroke="#A08C70" stroke-width="1.3"/>
+<path d="M575.00 261.00 L579.00 261.00" fill="none" stroke="#A08C70" stroke-width="1.3"/>
+<path d="M539 262 L553.43 225.81 L545 262 Z" fill="#765020" stroke="none" stroke-width="1"/>
+<circle cx="542" cy="261" r="4.1" fill="#765020" stroke="none" stroke-width="1"/>
+<text x="542" y="308" text-anchor="middle" font-size="18.2" font-weight="700" fill="#824B14">e.g. 60% invested</text>
+</g>
+</g>
+<g id="next-session-portfolio">
+<path d="M595 243 H630 Q640 243 640 234 V231 Q640 221 650 221 H657" fill="none" stroke="#AC6818" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+<path d="M665.43 220.63 A70 70 0 0 1 732.00 129.00 L732.00 159.00 A40 40 0 0 0 693.96 211.36 Z" fill="#106961" stroke="#FFFFFF" stroke-width="1.75"/>
+<path d="M732.00 129.00 A70 70 0 0 1 798.57 177.37 L770.04 186.64 A40 40 0 0 0 732.00 159.00 Z" fill="#5272AD" stroke="#FFFFFF" stroke-width="1.75"/>
+<path d="M798.57 177.37 A70 70 0 0 1 798.57 220.63 L770.04 211.36 A40 40 0 0 0 770.04 186.64 Z" fill="#C1849C" stroke="#FFFFFF" stroke-width="1.75"/>
+<path d="M798.57 220.63 A70 70 0 0 1 665.43 220.63 L693.96 211.36 A40 40 0 0 0 770.04 211.36 Z" fill="url(#cash-hatch)" stroke="#FFFFFF" stroke-width="1.75"/>
+<circle cx="732" cy="199" r="70.2" fill="none" stroke="#ACB9C8" stroke-width="1"/>
+<path d="M697.57 210.19 A36.2 36.2 0 1 1 766.43 210.19" fill="none" stroke="#BA7E31" stroke-width="3.5"/>
+<path d="M766.23 210.79 A36.2 36.2 0 0 1 697.77 210.79" fill="none" stroke="#D8DDE4" stroke-width="3.5"/>
+<text x="687.5" y="172.67" text-anchor="middle" font-size="18" font-weight="700" fill="white">A</text>
+<text x="764.33" y="160.5" text-anchor="middle" font-size="18" font-weight="700" fill="white">B</text>
+<text x="787.0" y="205.0" text-anchor="middle" font-size="18" font-weight="700" fill="#462439">C</text>
+<rect x="709" y="246" width="46" height="20" rx="6" fill="#F0F3F5" stroke="none" stroke-width="1"/>
+<text x="732" y="262" text-anchor="middle" font-size="18" font-weight="700" fill="#475565">Cash</text>
+<path d="M724 190 V185 Q724 182 727 182 H737 Q740 182 740 185 V190" fill="none" stroke="#385771" stroke-width="2"/>
+<rect x="713" y="190" width="38" height="26" rx="4" fill="#E2EBF5" stroke="#385771" stroke-width="2"/>
+<path d="M714 197 Q732 207 750 197" fill="none" stroke="#385771" stroke-width="1.6"/>
+<rect x="729" y="199" width="6" height="6" rx="1.2" fill="#E9B66A" stroke="#8B672C" stroke-width="1"/>
+<rect x="636" y="283" width="192" height="34" rx="8" fill="#3D567B" stroke="none" stroke-width="1"/>
+<text x="732" y="305.5" text-anchor="middle" font-size="17.5" font-weight="700" fill="white">Next-session portfolio</text>
+</g>
+</g>
+</svg>
