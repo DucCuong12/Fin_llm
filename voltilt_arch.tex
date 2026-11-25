@@ -62,7 +62,7 @@
 \draw[panel, draw=sla, fill=slabg!60] (3.45,4.35) rectangle (8.7,6.43);
 \node[anchor=north west, font=\footnotesize\bfseries, text=sla] at (3.55,6.4) {Risk Estimation};
 \node[op, fill=terbg, draw=ter, line width=0.9pt, minimum height=1.45cm, inner xsep=2.5pt] (tret) at (6.93,5.2)
-  {\li[1.5em]{chart-area-line}\\[2pt]Tilted Portfolio Return\\[1pt]{\scriptsize$\tilde r_s=\frac{1}{|\mathcal{B}_s|}\sum_{i\in\mathcal{B}_s}\tau_{i,s-1}r^{\mathrm{obs}}_{i,s}$}};
+  {\li[1.5em]{chart-area-line}\\[2pt]Tilted Portfolio Return\\[1pt]{\scriptsize$\tilde r_s=\frac{1}{|\mathcal{B}_s|}\sum_{i}\tau_{i,s-1}r_{i,s}$}};
 \node[op, fill=slabox, draw=sla, minimum width=1.3cm, minimum height=1.45cm] (vol) at (4.18,5.2)
   {\li[1.5em]{activity}\\[2pt]Volatility\\[1pt]$\hat\sigma_t$};
 \draw[rk] (tret) -- (vol);
@@ -137,7 +137,7 @@
 % the coupling: yesterday's tilts define the portfolio whose risk is measured
 \draw[fb] (10.5,2.95) -- (10.5,3.9) -| (tret.south);
 \node[fill=white, inner sep=1.2pt, font=\scriptsize\bfseries, text=ter!80!black] at (8.7,3.9)
-  {\li[1.25em]{history}\; prior tilts $\tau_{i,s-1}$};
+  {\li[1.25em]{history}\; yesterday's tilts $\tau_{i,t-1}$};
 
 % ================================================================
 % Daily loop: positions are held until the next close, then the cycle repeats
@@ -159,7 +159,7 @@
 \node[draw=neu, fill=white, line width=0.8pt, rounded corners=7pt, align=center, inner sep=4pt,
       font=\footnotesize] (cyc) at (1.9,3.95)
   {\li[1.6em]{calendar-repeat}\\[2pt]\bfseries Daily Rebalance\\[2pt]
-   {\scriptsize hold positions}\\[-1pt]{\scriptsize until $t{+}1$}};
+   {\scriptsize hold $a_{i,t}$}\\[-1pt]{\scriptsize until $t{+}1$}};
 
 \end{tikzpicture}
 \end{document}

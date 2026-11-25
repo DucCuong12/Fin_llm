@@ -7,7 +7,7 @@ An LLM trading policy can change both the assets a portfolio holds and the fract
 
 We consider daily allocation over a universe of $N$ stocks or cryptocurrencies. Let $p_{i,t}$ be the adjusted closing price of asset $i$ on panel date $t$, and let $\mathcal{A}_t$ be the set of assets with a valid close on that date, with $N_t=|\mathcal{A}_t|$. For adjacent closes the return ending at $t+1$ is $r_{i,t+1}=p_{i,t+1}/p_{i,t}-1$. We write $\mathcal{X}_{i,t}$ for the news items associated with asset $i$ and dated $t$. The allocator selects positions at the close using $\mathcal{F}_t=\{p_{i,s},\mathcal{X}_{i,s}:s\leq t\}$, with missing inputs allowed, for the subsequent holding interval.
 
-We use data from FINSABER and InvestorBench~\cite{li2025finsaber,li2024investorbench}. When an item has only a date, we treat it as available at that day’s close. The backtest also uses the final close in the decision, so same-close execution is an alignment assumption for both inputs. In Section~\ref{sec:experiments} we delay news by one observed session and separately test trading one session after forming the entire target portfolio. These timing checks address information availability at execution. Pretraining overlap poses a separate source of look-ahead.
+We use data from FINSABER and InvestorBench~\cite{li2025finsaber,li2024investorbench}. When an item has only a date, we treat it as available at that day’s close. This assumption specifies how we align the data. Executability at that close depends on the unobserved publication time. Section~\ref{sec:experiments} tests a more conservative cutoff by admitting each score at the asset's next observed close.
 
 \subsection{Capital Weights and Backtest Accounting}
 
@@ -42,7 +42,7 @@ This contrast allows the budget to respond to historical composition. To measure
     -\mathrm{SR}(\boldsymbol{\lambda}^{\mathrm{ref}},\boldsymbol{q}^{\mathrm{eq}}).
   \label{eq:composition-contrast}
 \end{equation}
-We take $\boldsymbol{\lambda}^{\mathrm{ref}}=\boldsymbol{\lambda}^{\mathrm{eq}}$, computed from information available at each decision. This retrospective comparison holds the daily invested fraction constant. The compositions can still differ in turnover, realised volatility, and factor exposures, so the contrast measures the net portfolio effect of reallocating capital at the chosen budget.
+We take $\boldsymbol{\lambda}^{\mathrm{ref}}=\boldsymbol{\lambda}^{\mathrm{eq}}$, computed from information available at each decision. This is a controlled backtest comparison, with the same invested fraction on each date and potentially different turnover costs.
 
 \subsection{Performance and News Information}
 
@@ -53,4 +53,4 @@ We use annualised net Sharpe as the primary performance measure and report cumul
            \operatorname{PctRank}_i(Y^{(h)}_{i,t})\bigr).
   \label{eq:ic}
 \end{equation}
-The same-day coefficient measures contemporaneous association. In particular, dated news can describe a price movement that has already occurred by the close. The forward coefficients use cumulative returns from the decision close through the next one or five observed sessions. We also test the signal that drives the traded ranks. For each eligible date in a stock window, we compute Spearman correlation across assets between $s_{i,t}$ and the forward return, then average these daily correlations. Section~\ref{sec:experiments} describes eligibility, ties, and inference.
+The same-day coefficient measures contemporaneous association. In particular, dated news can describe a price movement that has already occurred by the close. The forward coefficients use cumulative returns from the decision close through the next one or five observed sessions.

@@ -9,6 +9,7 @@
 \usepackage[varvw]{newtxmath}
 \usepackage{graphicx}   % figures and \resizebox in the tables of experiments.tex
 \usepackage{xcolor}
+\newcommand{\est}[1]{{\color{red}#1}} % PLACEHOLDER estimate, must be verified (see ESTIMATES_TO_VERIFY.md)
 \usepackage{booktabs}   % table rules in experiments.tex
 \usepackage{amsmath}    % \mathbb, \operatorname, \eqref
 \usepackage{url}
@@ -18,7 +19,7 @@
 %
 \begin{document}
 %
-\title{VolTilt: Attributing News and Risk Control in LLM Portfolio Allocation}
+\title{VolTilt: A Risk-Budgeted LLM Allocator that Separates How Much Risk to Hold from Where to Allocate It}
 %
 \titlerunning{VolTilt}
 %
@@ -33,7 +34,7 @@
 \maketitle
 %
 \begin{abstract}
-A trading agent can improve its risk-adjusted performance by changing which assets it holds or how much capital it invests. We propose VolTilt to examine these contributions separately. A large language model extracts structured events from financial news. We filter reports, smooth their impact scores, and use ranks to form bounded relative weights. A volatility-targeting rule sets the invested fraction from realised returns weighted by past tilts, creating a lagged link between the two rules. We evaluate the method in three settings from FINSABER and InvestorBench, covering 13 asset--setting entries. In the FINSABER stock window, the portfolio has higher Sharpe and shallower drawdown than the fully invested equal-weight reference. The difference from volatility scaling alone is small in that window. In the two stock settings, matching daily invested capital yields mixed Sharpe differences across labellers. The one-session news delay also gives mixed results across windows. Same-day associations for raw event scores are positive, while tests of forward returns offer limited evidence for the smoothed scores that drive the allocation. These results show how explicit budget and composition comparisons qualify performance claims about news-based trading policies.
+An improvement in the risk-adjusted performance of a trading agent can come from the information it extracts from news or from the exposure implied by its allocation rule. We propose VolTilt to examine these contributions. A large language model extracts structured events from financial news, and the ranks of smoothed event scores produce a bounded tilt around equal weights. A volatility-targeting rule scales the invested fraction using realised returns on historically tilted portfolios. The rules for ranking and scaling are distinct, although past tilts can affect today's volatility estimate. We evaluate VolTilt on 13 assets across three benchmarks against a fully invested equal-weight reference, rule-based strategies, and reimplementations of published trading agents. News-off, matched-budget, and shifted-score comparisons assess the incremental contribution of the text signal. Volatility scaling accounts for most of the risk-adjusted gain in the volatile stock window and reduces drawdown. We find little statistically detectable gain from the news tilt, including when the invested fraction is matched across portfolios. Event scores are associated with same-day returns, with little detectable association at forward horizons. Performance for several reimplemented agents varies across backbones.
 \keywords{Large language models \and Financial trading agents \and Volatility targeting \and Portfolio allocation.}
 \end{abstract}
 %
