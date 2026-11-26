@@ -56,7 +56,7 @@ RECONCILIATION DECISIONS (why 1.92 and not 2.45):
 ```
 
 ## Review-guide items (26 Nov) not resolvable by writing
-- Block-bootstrap CIs for portfolio Sharpe differences, matched-budget cells and delay (shown as red "pending").
+- Interval estimates were removed from the text (per request); none are reported.
 - Cross-sectional IC of smoothed traded score; sentiment-only comparator; gpt-oss-120b 2x2 decomposition; post-cutoff untouched window.
 - Ledger-based returns, drift-based costs, average invested fraction and realised volatility (P0 items 01-03).
 - Verify ranks, Wilcoxon p-values, wins on regenerated per-asset series.
